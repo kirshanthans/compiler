@@ -1,7 +1,7 @@
 all: group compiler
 
 group:
-	echo "Name: Kirshanthan Sundararajah ID: ksundar\nName: Laith Sakka ID: lsakka"
+	echo "Name: Kirshanthan Sundararajah ID: ksundar\n"
 
 compiler: helloworld
 
