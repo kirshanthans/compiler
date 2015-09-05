@@ -5,44 +5,44 @@ int main(int argc, char **argv){
 		
 		yyin = fopen(argv[1], "r");
 		
-		TOKEN token = static_cast<TOKEN> (yylex()); 
+		int token = yylex(); 
 		
 		while(token){
-				if(token == t_ILLEGAL){
+				if(token == TOKEN_ILLEGAL){
 						logger.log("Illegal Token Captured");
 						return -1;
 				}
 				cout << "Token Type: " << getTokenName(token) << endl;
 				cout << "Value: "      << yytext              << endl;
 
-				token = static_cast<TOKEN> (yylex());
+				token = yylex();
 		}
 
 		return 0; 
 }
 
-string getTokenName(TOKEN token)
+string getTokenName(int token)
 {
 		switch(token){
-				case(t_EOF):
+				case(TOKEN_EOF):
 						return "EOF"; 
-				case(t_KEYWORD):
+				case(TOKEN_KEYWORD):
 						return "KEYWORD"; 
-				case(t_OPERATOR):
+				case(TOKEN_OPERATOR):
 						return "OPERATOR";
-				case(t_COMMENT):
+				case(TOKEN_COMMENT):
 						return "COMMENT";
-				case(t_STRINGLITERAL):
+				case(TOKEN_STRINGLITERAL):
 						return "STRINGLITERAL";
-				case(t_IDENTIFIER):
+				case(TOKEN_IDENTIFIER):
 						return "IDENTIFIER";
-				case(t_FLOATLITERAL):
+				case(TOKEN_FLOATLITERAL):
 						return "FLOATLITERAL";
-				case(t_INTLITERAL):
+				case(TOKEN_INTLITERAL):
 						return "INTLITERAL";
-				case(t_WHITESPACE):
+				case(TOKEN_WHITESPACE):
 						return "WHITESPACE";
-				case(t_ILLEGAL):
+				case(TOKEN_ILLEGAL):
 						return "ILLEGAL";
 				default:
 						return "UNKNOWN";

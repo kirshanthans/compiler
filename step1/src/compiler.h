@@ -7,7 +7,7 @@
 #include "logger.h"
 #include "scanner.h"
 
-string getTokenName(TOKEN token);
+string getTokenName(int token);
 using namespace std; 
 
 #endif

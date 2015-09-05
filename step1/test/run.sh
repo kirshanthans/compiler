@@ -11,6 +11,6 @@ do
 	if [ $CHECK = "0" ]; then 
 			echo "Test Passed"
 	else
-			echo "Test Failed. Number of different lines: $CHECK"
+			echo "Test Failed. Number different lines: $CHECK"
 	fi
 done	

@@ -15,15 +15,15 @@ WHITESPACE      [ \n\t\r\n]+
 
 %%
 
-{KEYWORD}                            { TOKEN token=t_KEYWORD;  return token; }
-{OPERATOR}                           { TOKEN token=t_OPERATOR; return token; }
+{KEYWORD}                            { return TOKEN_KEYWORD; }
+{OPERATOR}                           { return TOKEN_OPERATOR; }
 {COMMENT}                            { ; }
-{STRINGLITERAL}                      { TOKEN token=t_STRINGLITERAL; return token;}
-{IDENTIFIER}                         { TOKEN token=t_IDENTIFIER;    return token;}
-{FLOATLITERAL}                       { TOKEN token=t_FLOATLITERAL;  return token;}
-{INTLITERAL}                         { TOKEN token=t_INTLITERAL;    return token;}
+{STRINGLITERAL}                      { return TOKEN_STRINGLITERAL;}
+{IDENTIFIER}                         { return TOKEN_IDENTIFIER;}
+{FLOATLITERAL}                       { return TOKEN_FLOATLITERAL;}
+{INTLITERAL}                         { return TOKEN_INTLITERAL;}
 {WHITESPACE}                         { ; }
-. 									 { TOKEN token=t_ILLEGAL; return token;}
+. 									 { return TOKEN_ILLEGAL;}
 %%
 int yywrap()
 {
