@@ -20,6 +20,10 @@ EXECUTABLE = Micro
 
 all: compiler
 
+group:
+	@echo "Name: Kirshanthan Sundararajah ID: ksundar"
+	@echo "Name: Laith Sakka ID:lsakka"
+
 compiler: directory $(OBJECT) 
 	$(CC) -o $(EXECUTABLE) $(OBJECT)
 

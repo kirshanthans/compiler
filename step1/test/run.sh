@@ -1,5 +1,7 @@
 #!/bin/bash
-mkdir -p result
+echo "Cleaning....."
+rm -rf result
+mkdir result
 INPUT=./input
 RESULT=./result
 OUTPUT=./output
