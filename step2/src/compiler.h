@@ -8,7 +8,6 @@
 #include "parser.h"
 #include "scanner.h"
 
-string getTokenName(int token);
 using namespace std; 
 
 #endif

@@ -1,5 +1,5 @@
 %{
-#include "../src/parser.h"
+#include "parser.h"
 %}
 %start program
 
@@ -202,5 +202,5 @@ empty 			  :
 
 void yyerror(char* s)
 {
-	fprintf(stderr, "error: %s\n", s);
+	//fprintf(stderr, "error: %s\n", s);
 }

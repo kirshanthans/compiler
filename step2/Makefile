@@ -1,8 +1,8 @@
 LEX  = flex
-YACC = yacc
+YACC = bison
 CC   = g++
 
-CFLAGS = -c -Wno-write-strings -I./$(GENERATEDDIR)
+CFLAGS = -c -Wno-write-strings -I./$(GENERATEDDIR) -I./$(SOURCEDIR)
 
 SOURCEDIR    = src
 BUILDDIR     = build
