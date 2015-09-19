@@ -16,7 +16,7 @@ OBJECT = $(join $(addsuffix $(BUILDDIR)/, $(dir $(SOURCE))), $(notdir $(SOURCE:=
 
 EXECUTABLE = Micro
 
-all: compiler
+all:group compiler
 
 group:
 	@echo "Name: Kirshanthan Sundararajah ID: ksundar"
