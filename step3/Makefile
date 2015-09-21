@@ -35,7 +35,7 @@ $(BUILDDIR)/%.o: $(GENERATEDDIR)/%.c $(HEADER)
 	$(CC) -o $@ $(CFLAGS) $<
 
 $(GENERATEDDIR)/parser.c: $(SOURCEDIR)/parser.y $(SOURCEDIR)/parser.h 
-	$(YACC) -o $@ $< --defines=$(GENERATEDDIR)/scanner.h
+	$(YACC) -v -o $@ $< --defines=$(GENERATEDDIR)/scanner.h
 
 $(GENERATEDDIR)/scanner.c: $(SOURCEDIR)/scanner.l $(GENERATEDDIR)/parser.c
 	$(LEX) -o $@ $<
