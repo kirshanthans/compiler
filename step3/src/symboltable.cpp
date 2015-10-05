@@ -1,17 +1,21 @@
 #include "symboltable.h"
+
 int Scope::blockCounter=1;
+vector<string> Scope::shadowVar;
 
 bool Scope::addSymbolEntry(string id_, SymbolEntryType entry_){
 		//check that entry not already exists
 		if(idExistsInScope(id_)){
-				cout << "DECLARATION ERROR " <<  &id_[0] << endl;
+				cout << "DECLARATION ERROR " <<  id_ << endl;
 				return false;
 		}
 		if(idExistInParentScope(id_))
-				cout << "SHADOW WARNING " << &id_[0] << endl;
+				if(find(shadowVar.begin(), shadowVar.end(), id_) == shadowVar.end())
+						shadowVar.push_back(id_);
+				//cout << "SHADOW WARNING " << id_ << endl;
 
 		orderedEntries.push_back(SymbolTableEntry(entry_, id_ , "", NULL));
-		identifiersLoopUp[id_] = orderedEntries.size()-1;
+		identifiersLookUp[id_] = orderedEntries.size()-1;
 
 		return true;
 }
@@ -19,14 +23,16 @@ bool Scope::addSymbolEntry(string id_, SymbolEntryType entry_){
 bool Scope::addSymbolEntry(string id_ , string stringVal_){
 		//check that entry not already exists
 		if(idExistsInScope(id_)){
-				cout << "DECLARATION ERROR " <<  &id_[0] << endl;
+				cout << "DECLARATION ERROR " <<  id_ << endl;
 				return false;
 		}
 		if(idExistInParentScope(id_))
-				cout << "SHADOW WARNING " << &id_[0] << endl;
+				if(find(shadowVar.begin(), shadowVar.end(), id_) == shadowVar.end())
+						shadowVar.push_back(id_);
+				//cout << "SHADOW WARNING " << &id_ << endl;
 
-		orderedEntries.push_back( SymbolTableEntry(STRING,id_, stringVal_, NULL));
-		identifiersLoopUp[id_] = orderedEntries.size()-1;
+		orderedEntries.push_back( SymbolTableEntry(STRING, id_, stringVal_, NULL));
+		identifiersLookUp[id_] = orderedEntries.size()-1;
 		return true;
 }
 
@@ -59,34 +65,42 @@ Scope* Scope::createChildScope(){
 }
 
 Scope* Scope::getParentScope(){
-		return  parentScope;
+		return parentScope;
 }
 
 string Scope::getScopeName(){
 		return scopeName;
 }
 
+void Scope::printShadowVar(){
+		if(shadowVar.size()){
+				for(vector<string>::iterator i = shadowVar.begin(); i != shadowVar.end(); ++i)
+						cout << "SHADOW WARNING " << *i << endl;
+		}
+}
+
 void Scope::printSymbolTable(){
-		cout << "Symbol table " << &scopeName[0] << endl;
+		cout << "Symbol table " << scopeName << endl;
 
 		for(int i=0; i<orderedEntries.size(); i++){
 
-				if(orderedEntries[i].entryType==SCOPE)
+				if(orderedEntries[i].entryType==SCOPE){
+						cout << endl;
 						orderedEntries[i].scopeVal->printSymbolTable();
+				}
 
-				else if(orderedEntries[i].entryType == INT )
+				else if(orderedEntries[i].entryType == INT)
 						cout << "name " << &orderedEntries[i].id[0] << " type INT" << endl;
 
-				else if(orderedEntries[i].entryType == FLOAT )
+				else if(orderedEntries[i].entryType == FLOAT)
 						cout << "name " << &orderedEntries[i].id[0] << " type FLOAT" << endl;
 
 				else if(orderedEntries[i].entryType == STRING)
 						cout << "name " << &orderedEntries[i].id[0] << " type STRING value " << &orderedEntries[i].stringVal[0] << endl;
 		}
-		cout << endl;
 }
 
-bool Scope::idExistInParentScope(string id_)	{
+bool Scope::idExistInParentScope(string id_){
 		if(parentScope == NULL)
 				return false;
 		else{
@@ -98,7 +112,7 @@ bool Scope::idExistInParentScope(string id_)	{
 }
 
 bool Scope::idExistsInScope(string id_){
-		if(identifiersLoopUp.find(id_) == identifiersLoopUp.end())
+		if(identifiersLookUp.find(id_) == identifiersLookUp.end())
 				return false;
 		else
 				return true;

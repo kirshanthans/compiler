@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <algorithm>
 #include <map>
 #include <string>
 
@@ -50,16 +51,18 @@ class Scope{
 				Scope* createChildScope();
 				Scope* getParentScope();
 				string getScopeName();
+				static void printShadowVar();
 				void printSymbolTable();
 				
 		private:
-				map<string, int> identifiersLoopUp;
+				string scopeName;
+				Scope* parentScope;
+				map<string, int> identifiersLookUp;
 				vector<Scope*> childScopesPool;
 				vector<SymbolTableEntry> orderedEntries;
 				ScopeType scopeType;
-				string scopeName ;
-				Scope* parentScope;
 				static int blockCounter;
+				static vector<string> shadowVar;
 				
 				bool idExistInParentScope(string id_);	
 				bool idExistsInScope(string id_);

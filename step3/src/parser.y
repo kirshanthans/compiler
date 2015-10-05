@@ -59,7 +59,7 @@ vector<string> idList;
 %%
 
 /* Program */
-program  : TOKEN_KEY_PROGRAM id{currentScope = createGlobalScope();} TOKEN_KEY_BEGIN pgm_body TOKEN_KEY_END{currentScope->printSymbolTable();}
+program  : TOKEN_KEY_PROGRAM id{currentScope = createGlobalScope();} TOKEN_KEY_BEGIN pgm_body TOKEN_KEY_END{currentScope->printShadowVar();currentScope->printSymbolTable();}
 		 ;
 id       : TOKEN_IDENTIFIER{$$ = strdup(yytext);}
 		 ;
