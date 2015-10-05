@@ -7,10 +7,6 @@ int main(int argc, char **argv){
 		
 		int parse = yyparse();
 		
-		if(parse)
-				cout << "Not accepted" << endl;
-		else
-				cout << "Accepted" << endl;
-
+		
 		return 0; 
 }

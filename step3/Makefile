@@ -2,14 +2,14 @@ LEX  = flex
 YACC = bison
 CC   = g++
 
-CFLAGS = -c -Wno-write-strings -I./$(GENERATEDDIR) -I./$(SOURCEDIR)
+CFLAGS =-c -Wno-write-strings -I./$(GENERATEDDIR) -I./$(SOURCEDIR)
 
 SOURCEDIR    = src
 BUILDDIR     = build
 GENERATEDDIR = generated
 
-SOURCE    = scanner parser compiler logger
-HEAD      = parser compiler logger
+SOURCE    = scanner parser compiler logger symboltable
+HEAD      = parser compiler logger symboltable
 
 HEADER = $(join $(addsuffix $(SOURCEDIR)/, $(dir $(HEAD))), $(notdir $(HEAD:=.h)))
 OBJECT = $(join $(addsuffix $(BUILDDIR)/, $(dir $(SOURCE))), $(notdir $(SOURCE:=.o)))

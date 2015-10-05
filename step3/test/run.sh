@@ -9,7 +9,7 @@ for file in `ls $INPUT`
 do
 	echo "Testing....."$file
 	../Micro $INPUT/$file > $RESULT/${file%.micro}.out 
-	CHECK=$(diff -U 0 $OUTPUT/${file%.micro}.out $RESULT/${file%.micro}.out | grep -v ^@ | wc -l)
+	CHECK=$(diff -bBw -U 0 $OUTPUT/${file%.micro}.out $RESULT/${file%.micro}.out | grep -v ^@ | wc -l)
 	if [ $CHECK = "0" ]; then 
 			echo "Test Passed"
 	else
