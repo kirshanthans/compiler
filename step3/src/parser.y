@@ -2,7 +2,6 @@
 #include "parser.h"
 #include "symboltable.h"
 #include <string.h>
-Scope* globalScope;
 Scope* currentScope;
 vector<string> idList; 
 %}
@@ -60,7 +59,7 @@ vector<string> idList;
 %%
 
 /* Program */
-program  : TOKEN_KEY_PROGRAM id{currentScope = createGlobalScope(); globalScope = currentScope;} TOKEN_KEY_BEGIN pgm_body TOKEN_KEY_END{globalScope->printSymbolTable();}
+program  : TOKEN_KEY_PROGRAM id{currentScope = createGlobalScope();} TOKEN_KEY_BEGIN pgm_body TOKEN_KEY_END{currentScope->printSymbolTable();}
 		 ;
 id       : TOKEN_IDENTIFIER{$$ = strdup(yytext);}
 		 ;
