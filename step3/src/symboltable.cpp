@@ -1,7 +1,6 @@
 #include "symboltable.h"
 
 int Scope::blockCounter=1;
-vector<string> Scope::shadowVar;
 
 bool Scope::addSymbolEntry(string id_, SymbolEntryType entry_){
 		//check that entry not already exists
@@ -10,8 +9,7 @@ bool Scope::addSymbolEntry(string id_, SymbolEntryType entry_){
 				return false;
 		}
 		if(idExistInParentScope(id_))
-				if(find(shadowVar.begin(), shadowVar.end(), id_) == shadowVar.end())
-						shadowVar.push_back(id_);
+				cout << "SHADOW WARNING " << id_ << endl;
 
 		orderedEntries.push_back(SymbolTableEntry(entry_, id_ , "", NULL));
 		identifiersLookUp[id_] = orderedEntries.size()-1;
@@ -26,8 +24,7 @@ bool Scope::addSymbolEntry(string id_ , string stringVal_){
 				return false;
 		}
 		if(idExistInParentScope(id_))
-				if(find(shadowVar.begin(), shadowVar.end(), id_) == shadowVar.end())
-						shadowVar.push_back(id_);
+				cout << "SHADOW WARNING " << id_ << endl;
 
 		orderedEntries.push_back(SymbolTableEntry(STRING, id_, stringVal_, NULL));
 		identifiersLookUp[id_] = orderedEntries.size()-1;
@@ -68,13 +65,6 @@ Scope* Scope::getParentScope(){
 
 string Scope::getScopeName(){
 		return scopeName;
-}
-
-void Scope::printShadowVar(){
-		if(shadowVar.size()){
-				for(vector<string>::iterator i = shadowVar.begin(); i != shadowVar.end(); ++i)
-						cout << "SHADOW WARNING " << *i << endl;
-		}
 }
 
 void Scope::printSymbolTable(){

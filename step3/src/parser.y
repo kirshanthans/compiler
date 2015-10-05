@@ -59,7 +59,7 @@ vector<string> idList;
 %%
 
 /* Program */
-program  : TOKEN_KEY_PROGRAM id{currentScope = createGlobalScope();} TOKEN_KEY_BEGIN pgm_body TOKEN_KEY_END{currentScope->printShadowVar();currentScope->printSymbolTable();}
+program  : TOKEN_KEY_PROGRAM id{currentScope = createGlobalScope();} TOKEN_KEY_BEGIN pgm_body TOKEN_KEY_END{currentScope->printSymbolTable();}
 		 ;
 id       : TOKEN_IDENTIFIER{$$ = strdup(yytext);}
 		 ;
@@ -71,7 +71,7 @@ decl     : string_decl decl
 	     ;
 
 /* Global String Declaration */
-string_decl : TOKEN_KEY_STRING id TOKEN_OP_ASSIGN str TOKEN_OP_SEMICOL{bool status = currentScope->addSymbolEntry($2,$4); if(!status) return 1;}
+string_decl : TOKEN_KEY_STRING id TOKEN_OP_ASSIGN str TOKEN_OP_SEMICOL{bool status = currentScope->addSymbolEntry($2,$4);if(!status) return 1;}
 			;
 str         : TOKEN_STRINGLITERAL{$$ = strdup(yytext);}
 			;

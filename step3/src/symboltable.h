@@ -51,7 +51,6 @@ class Scope{
 				Scope* createChildScope();
 				Scope* getParentScope();
 				string getScopeName();
-				static void printShadowVar();
 				void printSymbolTable();
 				
 		private:
@@ -62,12 +61,9 @@ class Scope{
 				vector<SymbolTableEntry> orderedEntries;
 				ScopeType scopeType;
 				static int blockCounter;
-				static vector<string> shadowVar;
 				
 				bool idExistInParentScope(string id_);	
 				bool idExistsInScope(string id_);
-
-				
 
 };
 
