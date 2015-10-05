@@ -12,7 +12,6 @@ bool Scope::addSymbolEntry(string id_, SymbolEntryType entry_){
 		if(idExistInParentScope(id_))
 				if(find(shadowVar.begin(), shadowVar.end(), id_) == shadowVar.end())
 						shadowVar.push_back(id_);
-				//cout << "SHADOW WARNING " << id_ << endl;
 
 		orderedEntries.push_back(SymbolTableEntry(entry_, id_ , "", NULL));
 		identifiersLookUp[id_] = orderedEntries.size()-1;
@@ -29,9 +28,8 @@ bool Scope::addSymbolEntry(string id_ , string stringVal_){
 		if(idExistInParentScope(id_))
 				if(find(shadowVar.begin(), shadowVar.end(), id_) == shadowVar.end())
 						shadowVar.push_back(id_);
-				//cout << "SHADOW WARNING " << &id_ << endl;
 
-		orderedEntries.push_back( SymbolTableEntry(STRING, id_, stringVal_, NULL));
+		orderedEntries.push_back(SymbolTableEntry(STRING, id_, stringVal_, NULL));
 		identifiersLookUp[id_] = orderedEntries.size()-1;
 		return true;
 }
@@ -90,13 +88,13 @@ void Scope::printSymbolTable(){
 				}
 
 				else if(orderedEntries[i].entryType == INT)
-						cout << "name " << &orderedEntries[i].id[0] << " type INT" << endl;
+						cout << "name " << orderedEntries[i].id << " type INT" << endl;
 
 				else if(orderedEntries[i].entryType == FLOAT)
-						cout << "name " << &orderedEntries[i].id[0] << " type FLOAT" << endl;
+						cout << "name " << orderedEntries[i].id << " type FLOAT" << endl;
 
 				else if(orderedEntries[i].entryType == STRING)
-						cout << "name " << &orderedEntries[i].id[0] << " type STRING value " << &orderedEntries[i].stringVal[0] << endl;
+						cout << "name " << orderedEntries[i].id << " type STRING value " << &orderedEntries[i].stringVal[0] << endl;
 		}
 }
 
