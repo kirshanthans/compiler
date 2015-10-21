@@ -1,0 +1,9 @@
+PROGRAM test
+BEGIN
+	INT a, b, c, d;
+	FUNCTION VOID main()
+	BEGIN
+		d := (a+b)*c;
+		WRITE(d);
+	END
+END

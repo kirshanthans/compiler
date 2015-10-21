@@ -1,0 +1,172 @@
+#ifndef ASTNODE_H_
+#define ASTNODE_H_
+#include <vector>
+#include <string>
+#include <iostream>
+#include <sstream>
+#include"symboltable.h"
+
+class IRNode;
+class ASTNode;
+class StatementList;
+class AssignStatement;
+class Identifier;
+class Constant;
+
+using namespace std;
+
+enum Opcode {ADDI = 0, ADDF = 1, SUBI = 2, SUBF = 3, MULTI = 4, MULTF = 5, DIVI = 6, DIVF = 7, STOREI = 8, STOREF = 9, GT = 10, GE = 11, LT = 12, LE = 13, NE = 14, EQ = 15, JUMP = 16, LABEL = 17, READI = 18, READF = 19, WRITEI = 20, WRITEF = 21};
+
+enum ASTNodeType {ID, BINOP, STMLIST, CONST, ASSIGN, IO};
+
+enum BINOPType {ADD, SUB, MUL , DIV};
+
+string getOpcodeString(Opcode opcode);
+string convertCodetoString(vector<IRNode> code);
+void removedRedundentIRs(vector<IRNode> & in);
+class IRNode{
+public:
+	Opcode opcode;
+	string op1;
+	string op2;
+	string op3;
+	IRNode(Opcode opcode_, string op1_, string op2_, string op3_){
+		opcode = opcode_;
+		op1    = op1_;
+		op2    = op2_;
+		op3    = op3_;
+	};
+	//~IRNode();
+	string toIRString();
+	string toAssemblyString();
+	string getDef();
+	bool isAUse(string def);
+	bool isDef(string def);
+};
+
+
+
+class ASTNode{
+public:
+
+	ASTNode* left;
+	ASTNode* right;
+	string tempVal;
+	ASTNodeType nodeType;
+	SymbolEntryType valType;
+	virtual vector<IRNode> genCode() = 0;
+
+	//opt1
+	virtual bool hasImmediateValue(){
+		return false;
+	}
+	virtual ValueHolder getImmediateValue(){
+		return immediateVal;
+	}
+	virtual string getImmediateValueAsString(){
+		ostringstream tmp;
+		if(valType==FLOAT)
+			tmp<<fixed<<immediateVal.floatVal;
+		else
+			tmp<<fixed<<immediateVal.intval;
+
+		return tmp.str();
+	}
+
+	 void setImmediateValue(int immediateVal_){
+		immediateVal.intval=immediateVal_;
+	}
+	 void setImmediateValue(float immediateVal_){
+			immediateVal.floatVal=immediateVal_;
+		}
+protected:
+	ValueHolder immediateVal;
+
+
+};
+
+class StatementList:public ASTNode{
+public:
+
+	StatementList(ASTNode* left_, ASTNode* right_){
+		left = left_;
+		right = right_;
+		nodeType=ASTNodeType::STMLIST;
+	}
+	vector<IRNode> genCode();
+
+};
+
+class AssignStatement:public ASTNode{
+public:
+
+	AssignStatement(ASTNode * left_, ASTNode* right_){
+		left = left_;
+		right = right_;
+		nodeType=ASTNodeType::ASSIGN;
+		valType=left_->valType;
+	}
+	vector<IRNode> genCode();
+};
+
+class Identifier:public ASTNode{
+public:
+	string name;
+	Scope * scope;
+	Identifier(string name_, Scope* scope_){
+		name = name_;
+		scope=scope_;
+		nodeType=ASTNodeType::ID;
+		valType=scope->getIdType(name);
+	}
+	vector<IRNode> genCode();
+	bool hasImmediateValue();
+	ValueHolder getImmediateValue();
+
+
+
+};
+
+class Constant:public ASTNode{
+public:
+	string valAsString;
+	Constant(string valAsString_,SymbolEntryType  valType_){
+		valAsString = valAsString_;
+		valType=valType_;
+		nodeType=ASTNodeType::CONST;
+	}
+	vector<IRNode> genCode();
+	bool hasImmediateValue();
+
+};
+
+class IOCommand:public ASTNode{
+public:
+	bool isRead;
+	vector<ASTNode *> idList;
+	IOCommand(bool isRead_, vector<ASTNode *> idList_){
+		isRead=isRead_;
+		nodeType=ASTNodeType::IO;
+		idList=idList_;
+	}
+	vector<IRNode> genCode();
+
+};
+
+//swap left and right
+class Binop:public ASTNode{
+public:
+	BINOPType operationType;
+	bool valueKnown;
+	Binop(ASTNode * left_ , ASTNode* right_, BINOPType operationType_){
+		left=left_;
+		right=right_;
+		operationType=operationType_;
+		nodeType=ASTNodeType::BINOP;
+		valType=left_->valType;
+		valueKnown=false;
+	}
+	vector<IRNode> genCode();
+	bool hasImmediateValue();
+};
+#endif

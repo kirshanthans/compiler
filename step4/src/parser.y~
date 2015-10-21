@@ -1,0 +1,319 @@
+%{
+#include <string.h>
+ #include <stdio.h>
+#include "parser.h"
+#include "symboltable.h"
+#include "astnode.h"
+Scope* currentScope;
+vector<string> idList; 
+using namespace std;
+bool exp_prefix_empty=false;
+%}
+
+%start program
+
+%union {char* sval; int ival; float fval; ASTNode* astval;}
+
+%token TOKEN_KEY_PROGRAM  
+%token TOKEN_KEY_BEGIN    
+%token TOKEN_KEY_END      
+%token TOKEN_KEY_FUNCTION 
+%token TOKEN_KEY_READ     
+%token TOKEN_KEY_WRITE    
+%token TOKEN_KEY_IF       
+%token TOKEN_KEY_ELSE     
+%token TOKEN_KEY_FI       
+%token TOKEN_KEY_FOR      
+%token TOKEN_KEY_ROF      
+%token TOKEN_KEY_CONTINUE 
+%token TOKEN_KEY_BREAK    
+%token TOKEN_KEY_RETURN   
+%token TOKEN_KEY_INT      
+%token TOKEN_KEY_VOID     
+%token TOKEN_KEY_STRING   
+%token TOKEN_KEY_FLOAT    
+
+%token TOKEN_OP_ASSIGN  
+%token TOKEN_OP_ADD     
+%token TOKEN_OP_SUB     
+%token TOKEN_OP_MUL     
+%token TOKEN_OP_DIV     
+%token TOKEN_OP_EQ      
+%token TOKEN_OP_NEQ     
+%token TOKEN_OP_LE      
+%token TOKEN_OP_GR      
+%token TOKEN_OP_LEQ     
+%token TOKEN_OP_GEQ     
+%token TOKEN_OP_LPAREN  
+%token TOKEN_OP_RPAREN  
+%token TOKEN_OP_SEMICOL 
+%token TOKEN_OP_COMMA   
+
+%token TOKEN_STRINGLITERAL 
+%token TOKEN_IDENTIFIER    
+%token TOKEN_FLOATLITERAL  
+%token TOKEN_INTLITERAL    
+
+%token TOKEN_ILLEGAL
+
+%type <sval> id str
+%type <ival> var_type mulop addop
+%type <astval> stmt_list stmt base_stmt if_stmt for_stmt assign_stmt assign_expr expr factor postfix_expr primary   factor_prefix expr_prefix write_stmt  read_stmt
+%%
+
+/* Program */
+program  : TOKEN_KEY_PROGRAM id{currentScope = createGlobalScope();} TOKEN_KEY_BEGIN pgm_body TOKEN_KEY_END{/*currentScope->printSymbolTable();*/}
+		 ;
+id       : TOKEN_IDENTIFIER{$$ = strdup(yytext);}
+		 ;
+pgm_body : decl func_declarations
+		 ;
+decl     : string_decl decl
+	     | var_decl decl
+         | empty
+	     ;
+
+/* Global String Declaration */
+string_decl : TOKEN_KEY_STRING id TOKEN_OP_ASSIGN str TOKEN_OP_SEMICOL{bool status = currentScope->addSymbolEntry($<sval>2,$<sval>4);if(!status) return 1;}
+			;
+str         : TOKEN_STRINGLITERAL{$<sval>$ = strdup(yytext);}
+			;
+
+/* Variable Declaration */
+var_decl : var_type id_list TOKEN_OP_SEMICOL  
+		 {
+		 	for(int i = idList.size()-1; i >= 0; i--){
+				bool status = currentScope->addSymbolEntry(idList[i], static_cast<SymbolEntryType>($<ival>1));
+				if(!status) return 1;
+		 	}
+		 }
+		 ;
+var_type  : TOKEN_KEY_FLOAT{$<ival>$ = FLOAT;}
+		  | TOKEN_KEY_INT{$<ival>$ = INT;}
+		  ;
+any_type  : var_type 
+		  | TOKEN_KEY_VOID
+		  ;
+id_list   : id{idList.clear();} id_tail{idList.push_back($<sval>1);}
+		  ;
+id_tail   : TOKEN_OP_COMMA id id_tail{idList.push_back($<sval>2);}
+		  | empty
+		  ;
+
+/* Function Paramater List */
+param_decl_list : param_decl param_decl_tail 
+				| empty
+				;
+param_decl      : var_type id
+				{
+					bool status = currentScope->addSymbolEntry($<sval>2, static_cast<SymbolEntryType>($<ival>1));
+					if(!status) return 1;
+				}
+				;
+param_decl_tail : TOKEN_OP_COMMA param_decl param_decl_tail 
+				| empty
+				;
+
+/* Function Declarations */
+func_declarations : func_decl func_declarations 
+				  | empty
+				  ;
+func_decl         : TOKEN_KEY_FUNCTION any_type id{currentScope = currentScope->createChildScope($<sval>3);} TOKEN_OP_LPAREN param_decl_list TOKEN_OP_RPAREN TOKEN_KEY_BEGIN func_body TOKEN_KEY_END{currentScope = currentScope->getParentScope();}
+				  ;
+func_body         : decl stmt_list {	
+
+
+vector<IRNode> v=$2->genCode();
+//cout<<convertCodetoString(v);
+removedRedundentIRs(v);	
+cout<<"after:\n"<<convertCodetoString(v);
+}
+				  ;
+
+/* Statement List */
+stmt_list         : stmt stmt_list{$$ = new StatementList($1,$2);}
+				  | empty {$$=NULL;}
+				  ;
+stmt              : base_stmt{$$ = $1;}
+				  | if_stmt 
+				  | for_stmt
+				  ;
+base_stmt         : assign_stmt{$$ = $1;} 
+		  | read_stmt {$$ = $1;} 
+		  | write_stmt {$$ = $1;} 
+                  | return_stmt
+				  ;
+
+/* Basic Statements */
+assign_stmt       : assign_expr TOKEN_OP_SEMICOL{$$ = $1;} 
+				  ;
+assign_expr       : id TOKEN_OP_ASSIGN expr{$$ = new AssignStatement(new Identifier($1,currentScope), $3);}
+				  ;
+read_stmt         : TOKEN_KEY_READ{idList.clear();} TOKEN_OP_LPAREN id_list TOKEN_OP_RPAREN TOKEN_OP_SEMICOL
+{	
+vector<ASTNode *> idASTList;
+for(int i=idList.size()-1; i>=0; i--)
+	idASTList.push_back(new Identifier(idList[i],currentScope));
+
+$$=new IOCommand(true, idASTList);
+}
+				  ;
+write_stmt        : TOKEN_KEY_WRITE {idList.clear();}TOKEN_OP_LPAREN id_list TOKEN_OP_RPAREN TOKEN_OP_SEMICOL{	
+vector<ASTNode *> idASTList;
+
+for(int i=idList.size()-1; i>=0; i--)
+	idASTList.push_back(new Identifier(idList[i],currentScope));
+
+$$=new IOCommand(false, idASTList);
+};
+				  ;
+return_stmt       : TOKEN_KEY_RETURN expr TOKEN_OP_SEMICOL
+				  ;
+
+/* Expressions */
+expr              : expr_prefix factor
+{
+ASTNode * left;
+if($1!=NULL)
+{
+ left=$1;
+ left->right=$2;
+}
+else{
+left=$2;
+}
+$$=left;
+
+};
+
+				  
+expr_prefix       : expr_prefix factor addop 
+{
+ASTNode * left;
+if($1!=NULL)
+{
+ left=$1;
+ left->right=$2;
+}
+else{
+left=$2;
+}
+if($3=='+')
+ $$=new Binop(left,NULL, BINOPType::ADD);
+if($3=='-')
+ $$=new Binop(left,NULL, BINOPType::SUB);
+
+} 
+| empty{$$=NULL;}
+ ;
+
+factor            : factor_prefix postfix_expr {
+ASTNode * left;
+if($1!=NULL)
+{
+ left=$1;
+ left->right=$2;
+}
+else{
+left=$2;
+}
+$$=left;
+
+};
+
+factor_prefix     : factor_prefix postfix_expr mulop
+{
+ASTNode * left;
+if($1!=NULL)
+{
+ left=$1;
+ left->right=$2;
+}
+else{
+left=$2;
+}
+if($3=='*')
+ $$=new Binop(left,NULL, BINOPType::MUL);
+if($3=='/')
+ $$=new Binop(left,NULL, BINOPType::DIV);
+
+}
+		  | empty {$$=NULL;}
+
+				  ;
+postfix_expr      : primary {$$=$1}
+		   | call_expr
+				  ;
+call_expr         : id TOKEN_OP_LPAREN expr_list TOKEN_OP_RPAREN
+				  ;
+expr_list         : expr expr_list_tail 
+				  | empty
+				  ;
+expr_list_tail    : TOKEN_OP_COMMA expr expr_list_tail 
+				  | empty
+				  ;
+primary           : TOKEN_OP_LPAREN expr TOKEN_OP_RPAREN { $$=$2;}
+		  | id 		      { $$=new Identifier($1,currentScope);}
+                  | TOKEN_INTLITERAL  { $$=new Constant(strdup(yytext),INT) ; }
+                  | TOKEN_FLOATLITERAL{ $$=new Constant(strdup(yytext),FLOAT);}
+;
+				  ;
+addop             : TOKEN_OP_ADD {$$='+';}
+		  | TOKEN_OP_SUB {$$='-';}
+;
+				  ;
+mulop             : TOKEN_OP_MUL {$$='*';}
+	          | TOKEN_OP_DIV {$$='/';}
+ ;
+
+/* Complex Statements and Condition */ 
+if_stmt     : TOKEN_KEY_IF TOKEN_OP_LPAREN cond TOKEN_OP_RPAREN{currentScope = currentScope->createChildScope();} decl stmt_list{currentScope = currentScope->getParentScope();} else_part TOKEN_KEY_FI
+			;
+else_part   : TOKEN_KEY_ELSE{currentScope = currentScope->createChildScope();} decl stmt_list {currentScope = currentScope->getParentScope();}
+			| empty
+			;
+cond        : expr compop expr;
+compop      : TOKEN_OP_GR 
+		  	| TOKEN_OP_LE 
+            | TOKEN_OP_EQ 
+            | TOKEN_OP_NEQ 
+            | TOKEN_OP_LEQ 
+            | TOKEN_OP_GEQ
+            ;
+init_stmt   : assign_expr 
+		  	| empty
+			;
+incr_stmt   : assign_expr 
+	        | empty
+			;
+
+/* ECE 573 students use this version of for_stmt */
+for_stmt : TOKEN_KEY_FOR TOKEN_OP_LPAREN init_stmt TOKEN_OP_SEMICOL cond TOKEN_OP_SEMICOL incr_stmt TOKEN_OP_RPAREN{currentScope = currentScope->createChildScope();} decl aug_stmt_list TOKEN_KEY_ROF{currentScope = currentScope->getParentScope();}
+		 ;
+
+/* Continue and Break statements*/
+aug_stmt_list : aug_stmt aug_stmt_list 
+		  	  | empty
+			  ;
+aug_stmt      : base_stmt 
+		  	  | aug_if_stmt 
+              | for_stmt 
+              | TOKEN_KEY_CONTINUE TOKEN_OP_SEMICOL 
+              | TOKEN_KEY_BREAK TOKEN_OP_SEMICOL
+			  ;
+
+/* Augmented if statements*/ 
+aug_if_stmt   : TOKEN_KEY_IF TOKEN_OP_LPAREN cond TOKEN_OP_RPAREN {currentScope = currentScope->createChildScope();} decl aug_stmt_list{currentScope = currentScope->getParentScope();} aug_else_part TOKEN_KEY_FI
+		      ;
+aug_else_part : TOKEN_KEY_ELSE{currentScope = currentScope->createChildScope();} decl aug_stmt_list {currentScope = currentScope->getParentScope();} 
+		      | empty
+			  ;
+
+/* Empty  Token*/
+empty : 
+	  ;
+%%
+void yyerror(char* s)
+{
+	//fprintf(stderr, "error: %s\n", s);
+}
