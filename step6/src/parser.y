@@ -70,14 +70,28 @@ using namespace std;
 /* Program */
 program  : TOKEN_KEY_PROGRAM id{currentScope = Scope::createGlobalScope();} TOKEN_KEY_BEGIN pgm_body TOKEN_KEY_END
 		 {
-		 	vector<IRNode> code;
-			vector<AssemblyNode> assembly;
-			code = CodeGen::genAllCode();
-			assembly = genAssembly(code);
-		    cout << convertCodetoString(code,"*****IR Start*****","*****IR End*****");
-			cout << ";*****Tiny Code*****" << endl;
+		 	vector<IRNode> unopt_code;
+		 	vector<IRNode> opt_code;
+			vector<AssemblyNode> unopt_assembly;
+			vector<AssemblyNode> opt_assembly;
+			
+			unopt_code = CodeGen::genAllCode(false);
+			opt_code = CodeGen::genAllCode(true);
+			
+			unopt_assembly = genAssembly(unopt_code);
+			opt_assembly = genAssembly(opt_code);
+		    
+			cout << convertCodetoString(unopt_code,"*****IR Start Unoptimized*****","*****IR End Unoptimized*****");
+			cout << ";*****Start Tiny Code Unoptimized*****" << endl;
+			cout << convertAssemblytoString(globalDecl, true);
+			cout << convertAssemblytoString(unopt_assembly, true);
+			cout << ";*****End Tiny Code Unoptimized*****" << endl;
+			
+			cout << convertCodetoString(opt_code,"*****IR Start Optimized*****","*****IR End Optimized*****");
+			cout << ";*****Start Tiny Code Optimized*****" << endl;
 			cout << convertAssemblytoString(globalDecl, false);
-			cout << convertAssemblytoString(assembly, false);
+			cout << convertAssemblytoString(opt_assembly, false);
+			cout << ";*****End Tiny Code Optimized*****" << endl;
 		 }
 		 ;
 id       : TOKEN_IDENTIFIER

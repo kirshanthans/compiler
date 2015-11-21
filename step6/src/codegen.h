@@ -8,8 +8,9 @@ class CodeGen{
 
 		public:
 				static map<string , vector<IRNode> > codeByfuncName; 
+				static map<string , vector<IRNode> > codeByfuncNameUnopt; 
 				static vector<IRNode> genarateCodeForFunction(ASTNode * nodeTree, string functionName);
-				static vector<IRNode> genAllCode();
+				static vector<IRNode> genAllCode(bool opt);
 
 };
 

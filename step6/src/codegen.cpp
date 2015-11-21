@@ -6,6 +6,7 @@
 
 
 map<string , vector<IRNode> > CodeGen::codeByfuncName = map<string, vector<IRNode> >();
+map<string , vector<IRNode> > CodeGen::codeByfuncNameUnopt = map<string, vector<IRNode> >();
 
 
 vector<IRNode> CodeGen::genarateCodeForFunction(ASTNode * astRoot, string functionName){
@@ -25,28 +26,28 @@ vector<IRNode> CodeGen::genarateCodeForFunction(ASTNode * astRoot, string functi
 				code.push_back(IRNode(Opcode::UNLINK,"","",""));
 				code.push_back(IRNode(Opcode::RET,"","",""));
 		}
- 
-    
-    string retOffset;
-    if(functionScope->retValType!= SymbolEntryType::VOID ){
-        ostringstream ss;
-        ss<<"$"<<functionScope->retOffset;
-        retOffset=ss.str();
-    }else{
-        retOffset="";
-    }
-    
-        //Optimizer::optimizeAllLocal(code, retOffset);
+
+
+		string retOffset;
+		if(functionScope->retValType!= SymbolEntryType::VOID ){
+				ostringstream ss;
+				ss<<"$"<<functionScope->retOffset;
+				retOffset=ss.str();
+		}else{
+				retOffset="";
+		}
+		
+		codeByfuncNameUnopt[functionName] = code;
+
+		Optimizer::optimizeAllLocal(code, retOffset);
 
 		codeByfuncName[functionName]=code;
-    
-		//cout << convertCodetoString(code, "", "");
-		//cout << "debug " << functionName << endl;
+
 		return code;
 
 }
 
-vector<IRNode> CodeGen::genAllCode(){
+vector<IRNode> CodeGen::genAllCode(bool opt){
 		vector<IRNode> code;
 		string mainName="main";
 		Scope* mainScope=Scope::getFunctionScope("main");
@@ -56,11 +57,18 @@ vector<IRNode> CodeGen::genAllCode(){
 		string label="FUNC_main_L";
 		code.push_back(IRNode(Opcode::JSR,"","",label));
 		code.push_back(IRNode(Opcode::HALT,"", "",""));
-		
-		for(map<string, vector<IRNode> >::iterator it = codeByfuncName.begin(); it != codeByfuncName.end(); it++) {
-				vector<IRNode> tmp = it->second;
-				code.insert(code.end(), tmp.begin(), tmp.end());
+		if(opt){
+				for(map<string, vector<IRNode> >::iterator it = codeByfuncName.begin(); it != codeByfuncName.end(); it++) {
+						vector<IRNode> tmp = it->second;
+						code.insert(code.end(), tmp.begin(), tmp.end());
+				}
+		Optimizer::optimizeAllGlobal(code);
 		}
-        //Optimizer::optimizeAllGlobal(code);
+		else{
+				for(map<string, vector<IRNode> >::iterator it = codeByfuncNameUnopt.begin(); it != codeByfuncNameUnopt.end(); it++) {
+						vector<IRNode> tmp = it->second;
+						code.insert(code.end(), tmp.begin(), tmp.end());
+				}
+		}
 		return code;
 }
