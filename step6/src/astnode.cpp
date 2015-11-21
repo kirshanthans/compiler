@@ -154,6 +154,7 @@ string IRNode::getDef(){
 				case Opcode::STOREF:
 				case Opcode::READI:
 				case Opcode::READF:
+                case Opcode::POP:
 						return this->op3;
 						break;
 				default:
@@ -200,13 +201,14 @@ bool IRNode::isAUse(string reg){
 						break;
 				case Opcode::WRITEF:
 				case Opcode::WRITEI:
+                case Opcode::PUSH:
 						if(this->op3.compare(reg) == 0)
 								return true;
 						else
 								return false;
 
 						break;
-				default:
+                default:
 						return false;
 		}
 }
@@ -229,29 +231,7 @@ string IRNode::toIRString(){
 		}
 		return code;
 }
-void flipJumpOperands(IRNode* jumpIns){
-		string tmpOp1=jumpIns->op1;
-		jumpIns->op1=jumpIns->op2;
-		jumpIns->op2=tmpOp1;
 
-		switch(jumpIns->opcode){
-				case Opcode::GT:
-						jumpIns->opcode=Opcode::LT;
-						break;
-				case Opcode::LT:
-						jumpIns->opcode=Opcode::GT;
-						break;
-				case Opcode::GE:
-						jumpIns->opcode=Opcode::LE;
-						break;
-				case Opcode::LE:
-						jumpIns->opcode=Opcode::GE;
-						break;
-				default:
-						break;
-		}
-
-}
 //assembly node generation
 vector<AssemblyNode> IRNode::toAssembly(){
 		vector<AssemblyNode> assembly;

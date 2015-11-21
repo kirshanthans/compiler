@@ -2,6 +2,7 @@
 #include <sstream>
 #include "astnode.h"
 #include "codegen.h"
+#include"optimizer.h"
 
 
 map<string , vector<IRNode> > CodeGen::codeByfuncName = map<string, vector<IRNode> >();
@@ -24,8 +25,21 @@ vector<IRNode> CodeGen::genarateCodeForFunction(ASTNode * astRoot, string functi
 				code.push_back(IRNode(Opcode::UNLINK,"","",""));
 				code.push_back(IRNode(Opcode::RET,"","",""));
 		}
-		codeByfuncName[functionName]=code;
+ 
+    
+    string retOffset;
+    if(functionScope->retValType!= SymbolEntryType::VOID ){
+        ostringstream ss;
+        ss<<"$"<<functionScope->retOffset;
+        retOffset=ss.str();
+    }else{
+        retOffset="";
+    }
+    
+        //Optimizer::optimizeAllLocal(code, retOffset);
 
+		codeByfuncName[functionName]=code;
+    
 		//cout << convertCodetoString(code, "", "");
 		//cout << "debug " << functionName << endl;
 		return code;
@@ -47,6 +61,6 @@ vector<IRNode> CodeGen::genAllCode(){
 				vector<IRNode> tmp = it->second;
 				code.insert(code.end(), tmp.begin(), tmp.end());
 		}
-
+        //Optimizer::optimizeAllGlobal(code);
 		return code;
 }

@@ -250,10 +250,10 @@ postfix_expr      : primary {$$ = $1;}
 				  ;
 call_expr         : id{expList.clear();} TOKEN_OP_LPAREN  expr_list TOKEN_OP_RPAREN{$$ = new FuncCall($1, expList);}
 				  ;
-expr_list         : expr{expList.clear();} expr_list_tail{expList.push_back($1);}
+expr_list         : expr{expList.clear();} expr_list_tail{expList.insert(expList.begin(), $1);}
 				  | empty
 				  ;
-expr_list_tail    : TOKEN_OP_COMMA expr expr_list_tail{expList.push_back($2);} 
+expr_list_tail    : TOKEN_OP_COMMA expr expr_list_tail{expList.insert(expList.begin(), $2);} 
 				  | empty
 				  ;
 primary           : TOKEN_OP_LPAREN expr TOKEN_OP_RPAREN{$$ = $2;}
