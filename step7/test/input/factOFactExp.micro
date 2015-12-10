@@ -1,0 +1,32 @@
+PROGRAM factOfFactOfNumExp
+BEGIN
+	STRING input := "Please enter an integer number: ";
+	STRING eol := "factorial(factorial(num*10-10))";
+
+	FUNCTION INT factorial(INT a)
+	BEGIN
+		INT ret;
+		INT tret;
+		IF (a = 1)
+			RETURN 1;
+		ELSE
+			tret := factorial(a-1);
+			ret := tret*a;
+		FI
+				--WRITE(ret);
+
+		RETURN ret;
+	END
+
+	FUNCTION INT main ()
+	BEGIN
+		INT num;
+		INT result;
+		WRITE(input);
+		READ(num);
+		
+		result := factorial(factorial(num)/factorial(num-1)); 
+               WRITE(result,eol);
+		RETURN 0;
+	END
+END

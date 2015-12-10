@@ -5,9 +5,9 @@
 #include"optimizer.h"
 
 
-map<string , vector<IRNode> > CodeGen::codeByfuncName = map<string, vector<IRNode> >();
-map<string , vector<IRNode> > CodeGen::codeByfuncNameUnopt = map<string, vector<IRNode> >();
-
+map<string, vector<IRNode> > CodeGen::codeByfuncName = map<string, vector<IRNode> >();
+map<string, vector<IRNode> > CodeGen::codeByfuncNameUnopt = map<string, vector<IRNode> >();
+map<string, vector<string> > CodeGen::callgraph = map<string, vector<string> >();
 
 vector<IRNode> CodeGen::genarateCodeForFunction(ASTNode * astRoot, string functionName){
 		vector<IRNode> code;
@@ -71,4 +71,33 @@ vector<IRNode> CodeGen::genAllCode(bool opt){
 				}
 		}
 		return code;
+}
+
+void CodeGen::genCallGraph(){
+		string caller, callee;
+		vector<IRNode> code;
+		for(map<string, vector<IRNode> >::iterator it = codeByfuncName.begin(); it != codeByfuncName.end(); ++it){
+				caller = it->first;
+				code   = it->second;
+				for(int i = 0; i < code.size(); ++i){
+						if(code[i].opcode == Opcode::JSR){
+								callee = code[i].op3.substr(5, code[i].op3.size()-7);
+								callgraph[caller].push_back(callee);
+						}
+				}
+				
+		}
+}
+
+void CodeGen::printCallGraph(){
+		cout << ";*****Call Graph*****" << endl;
+		for(map<string, vector<string> >::iterator it = callgraph.begin(); it != callgraph.end(); ++it){
+				cout << ";Caller: " << it->first << endl;
+				cout << ";Callee: ";
+				for(int i = 0; i < it->second.size(); ++i){
+						cout << it->second[i];
+						cout << " ";
+				}
+				cout << endl << endl;
+		}
 }

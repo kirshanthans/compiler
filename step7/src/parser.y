@@ -11,7 +11,6 @@
 Scope* currentScope;
 vector<string> idList; 
 vector<ASTNode*> expList; 
-vector<AssemblyNode> globalDecl;
 using namespace std;
 %}
 
@@ -70,28 +69,29 @@ using namespace std;
 /* Program */
 program  : TOKEN_KEY_PROGRAM id{currentScope = Scope::createGlobalScope();} TOKEN_KEY_BEGIN pgm_body TOKEN_KEY_END
 		 {
-		 	vector<IRNode> unopt_code;
-		 	vector<IRNode> opt_code;
-			vector<AssemblyNode> unopt_assembly;
-			vector<AssemblyNode> opt_assembly;
+		 	pair<vector<IRNode>, vector<AssemblyNode> > unopt_code;
+		 	pair<vector<IRNode>, vector<AssemblyNode> > opt_code;
 			
+            vector<AssemblyNode> decls=CodeGen::generateAssembleDeclarations();
+            
 			unopt_code = CodeGen::genAllCode(false);
 			opt_code = CodeGen::genAllCode(true);
 			
-			unopt_assembly = genAssembly(unopt_code);
-			opt_assembly = genAssembly(opt_code);
-		    
-			cout << convertCodetoString(unopt_code,"*****IR Start Unoptimized*****","*****IR End Unoptimized*****");
-			cout << ";*****Start Tiny Code Unoptimized*****" << endl;
-			cout << convertAssemblytoString(globalDecl, true);
-			cout << convertAssemblytoString(unopt_assembly, true);
-			cout << ";*****End Tiny Code Unoptimized*****" << endl;
 			
-			cout << convertCodetoString(opt_code,"*****IR Start Optimized*****","*****IR End Optimized*****");
-			cout << ";*****Start Tiny Code Optimized*****" << endl;
-			cout << convertAssemblytoString(globalDecl, false);
-			cout << convertAssemblytoString(opt_assembly, false);
-			cout << ";*****End Tiny Code Optimized*****" << endl;
+			cout << convertCodetoString(unopt_code.first,"*****IR Start Unoptimized*****","*****IR End Unoptimized*****");
+			cout << ";*****Start Tiny Code Unoptimized*****" << endl;
+			cout << convertAssemblytoString(decls, true);
+			cout << convertAssemblytoString(unopt_code.second, true);
+			cout << ";*****End Tiny Code Unoptimized*****" << endl;
+			cout << endl;
+            
+            
+            cout << convertCodetoString(opt_code.first,"*****IR Start Optimized*****","*****IR End Optimized*****");
+            cout << ";*****Start Tiny Code Optimized*****" << endl;
+            cout << convertAssemblytoString(decls, false);
+            cout << convertAssemblytoString(opt_code.second, false);
+            cout << ";*****End Tiny Code Optimized*****" << endl;
+            cout << endl;
 
 		 }
 		 ;
@@ -100,7 +100,7 @@ id       : TOKEN_IDENTIFIER
 			$<sval>$ = strdup(yytext);
 		 }
 		 ;
-pgm_body : decl{globalDecl = declAssembly(currentScope);} func_declarations
+pgm_body : decl func_declarations
 		 ;
 decl     : string_decl decl
 	     | var_decl decl
@@ -145,7 +145,7 @@ param_decl_list : param_decl param_decl_tail
 param_decl      : var_type id
 				{
 					bool status = currentScope->addSymbolEntry($<sval>2, static_cast<SymbolEntryType>($<ival>1), true);
-					if(!status) return 1;
+					if(!status) return 1;	
 				}
 				;
 param_decl_tail : TOKEN_OP_COMMA param_decl param_decl_tail 
@@ -158,7 +158,8 @@ func_declarations : func_decl func_declarations
 				  ;
 func_decl         : TOKEN_KEY_FUNCTION any_type id{currentScope = currentScope->createChildScope($<sval>3, static_cast<SymbolEntryType>($<ival>2));} TOKEN_OP_LPAREN  param_decl_list TOKEN_OP_RPAREN TOKEN_KEY_BEGIN func_body TOKEN_KEY_END
 				  {
-					CodeGen::genarateCodeForFunction($9,$<sval>3); 
+					CodeGen::genarateCodeForFunction($9,$<sval>3);
+ 
 					currentScope = currentScope->getParentScope();
 				  }
 				  ;

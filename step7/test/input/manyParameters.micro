@@ -1,0 +1,36 @@
+PROGRAM manyParameters
+BEGIN
+	STRING input := "Please enter an integer number: ";
+
+	FUNCTION FLOAT print(FLOAT A,FLOAT B,FLOAT C,FLOAT D,FLOAT E,FLOAT F,FLOAT G)
+	BEGIN
+	FLOAT AA,BB,CC,DD,EE,FF,GG;
+	AA:=A+D;
+	BB:=AA+C;
+	CC:=100; 
+	DD:=AA*BB;
+	EE:=DD*CC;
+	FF:=GG+AA;
+	
+	WRITE(A,B,C,D,E,F,G);
+	WRITE(AA,BB,CC,DD,EE,FF,GG);
+
+	RETURN 1.1;
+	END
+
+	FUNCTION INT main ()
+	BEGIN
+		FLOAT num;
+		WRITE(input);
+		READ(num);
+		
+		num:=print(num ,
+		num*100 ,
+		num*100+100 ,
+		num*100-(100*num)-num,num*num*num,
+		num/1.9+num*(num)/(num*1.229),
+		num+num*num/num+(num)/(num-100.22*2288-22922*(22) )
+		,1,1);        
+		RETURN 0;
+	END
+END
