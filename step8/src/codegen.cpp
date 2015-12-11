@@ -78,8 +78,8 @@ vector<IRNode> CodeGen::genarateCodeForFunction(ASTNode * astRoot, string functi
 pair<vector<IRNode>, vector<AssemblyNode> >  CodeGen::genAllCode(bool opt){
 		vector<IRNode> code;
 		vector<AssemblyNode> assembly;
-		string mainName="main";
-		Scope* mainScope=Scope::getFunctionScope("main");
+		string mainName="id_main";
+		Scope* mainScope=Scope::getFunctionScope(mainName);
 
 		if(mainScope->retValType!=SymbolEntryType::VOID){
 				code.push_back(IRNode(Opcode::PUSH,"","",""));
@@ -96,7 +96,7 @@ pair<vector<IRNode>, vector<AssemblyNode> >  CodeGen::genAllCode(bool opt){
 
 
 		}
-		string label="FUNC_main_L";
+		string label="FUNC_id_main_L";
 		code.push_back(IRNode(Opcode::JSR,"","",label));
 		assembly.push_back(AssemblyNode(AssemblyIns::ASM_JSR,"",label));
 

@@ -1,6 +1,7 @@
 %{
 #include <string.h>
 #include <stdio.h>
+#include <sstream>
 #include "parser.h"
 #include "symboltable.h"
 #include "astnode.h"
@@ -97,7 +98,10 @@ program  : TOKEN_KEY_PROGRAM id{currentScope = Scope::createGlobalScope();} TOKE
 		 ;
 id       : TOKEN_IDENTIFIER
 		 {
-			$<sval>$ = strdup(yytext);
+			ostringstream oss;
+			oss << "id_" << yytext; 
+			//$<sval>$ = strdup(yytext);
+			$<sval>$ = strdup(oss.str().c_str());
 		 }
 		 ;
 pgm_body : decl func_declarations
