@@ -1,0 +1,97 @@
+PROGRAM factorial
+BEGIN
+	STRING intro := "Enter number of  int numbers\n";
+	STRING pre := "Please enter the ";
+	STRING post := "th number\n";
+	STRING respre := "The number ";
+	STRING respost := "s even condition = ";
+	STRING respostodd := "s odd condition = ";
+        STRING eol := "\n";
+	
+	FUNCTION INT add (INT a, INT b)
+	BEGIN
+	        INT result;
+		result := a+b;
+		RETURN result;
+	END
+
+	FUNCTION INT sub (INT a, INT b)
+	BEGIN
+	        INT result;
+		result := a-b;
+		RETURN result;
+	END
+
+	FUNCTION INT multiply (INT a, INT b)
+	BEGIN
+	        INT result;
+		result := a*b;
+		RETURN result;
+	END
+
+	FUNCTION INT div (INT a, INT b)
+	BEGIN
+	        INT result;
+		result := a/b;
+		RETURN result;
+	END
+
+	FUNCTION INT even (INT a)
+	BEGIN
+	        INT result;
+                IF(a = 0)
+                        result := 1;
+                ELSE
+                        result := odd(a - 1);
+                FI
+		RETURN result;
+	END
+
+	FUNCTION INT odd (INT a)
+	BEGIN
+	        INT result;
+                IF(a = 0)
+                        result := 0;
+                ELSE
+                        result := even(a - 1);
+                FI
+		RETURN result;
+	END
+	
+	FUNCTION INT main ()
+	BEGIN
+		INT i,j;
+                STRING wrong := "Something is wrong\n";
+                i := 0;
+                
+		WRITE(intro);
+                READ(j);
+        	FOR(;(j+2)>= (i+2);)
+                        INT result,a;
+                        WRITE(pre,i,post,j,eol,wrong,eol);
+                        READ(a);
+                        result := even(sub(add(div(multiply(a,2),2),1),1));
+                        WRITE(respre,a,respost,result,eol);
+                        result := odd(add(multiply(a,2),a));
+--                        IF(0<1)
+--                                CONTINUE;
+--                        FI
+                        IF(result = 0)
+                                INT p;
+                                p := 1;
+                                WRITE(respre,a,respostodd,result,eol);
+                                result := 0;
+                        ELSE
+				INT p;
+				p := 0;
+				WRITE(respre,a,respostodd,result,eol);
+                                result := 1;
+                        FI
+                        IF(result = even(a))
+                                WRITE(wrong,eol);
+                        FI
+                        i := i+1;
+                ROF
+		RETURN 0;
+	END
+END

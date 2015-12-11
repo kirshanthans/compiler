@@ -1,0 +1,47 @@
+PROGRAM mutualRecursive
+BEGIN
+
+	FUNCTION FLOAT one(INT a,FLOAT B,FLOAT C,FLOAT D,FLOAT E,FLOAT F,FLOAT G)
+	BEGIN
+	FLOAT AA,BB,CC,DD,EE,FF,GG;
+ 	
+	IF (a = 0)
+             RETURN 0.99;	
+	FI
+	AA:=D;
+	BB:=AA+C;
+	CC:=100; 
+	DD:=AA*BB;
+	EE:=DD*CC;
+	READ(EE,DD);
+	FF:=GG+AA;
+	WRITE(a,B,C,D,E,F,G,AA,BB,CC,DD,EE,FF);
+	RETURN two(a-1,B,C,D,E,F,G);
+	END
+
+	FUNCTION FLOAT two(INT a,FLOAT B,FLOAT C,FLOAT D,FLOAT E,FLOAT F,FLOAT G)
+	BEGIN
+	FLOAT AA,BB,CC,DD,EE,FF,GG;
+	
+	IF (a = 0)
+           RETURN 0.99;
+	FI
+	AA:=D;
+	BB:=AA+C;
+	CC:=100; 
+	DD:=AA*BB;
+	EE:=DD*CC;
+	FF:=GG+AA;
+	WRITE(a,B,C,D,E,F,G,AA,BB,CC,DD,EE,FF);
+	RETURN one(a-1,B,C,D,E,F,G);
+	END
+
+	FUNCTION INT main ()
+	BEGIN
+			
+	INT E; 
+	E:=one(100,1.1,1.1,0.3,23.3,23.3,2.2);	
+	
+	RETURN 0;
+	END
+END

@@ -1,0 +1,114 @@
+PROGRAM expr
+BEGIN
+        STRING DBG := "\nDebug\n";
+
+	FUNCTION VOID main()
+	BEGIN
+	        FLOAT a,b,c,d;
+	        FLOAT x,y,z,t;
+		a := 1;
+		b := 2;
+		c := 10;
+		d := 20;
+
+		WRITE (a);
+		WRITE (b);
+		WRITE (c);
+		WRITE(d);
+		a := a + b;
+		WRITE (a);
+		b := a * c;
+		WRITE (b);
+		c := 0 - a + b;
+		WRITE (c);
+		d := 0 - d;
+		WRITE (d);
+                WRITE(DBG); -- 1
+		a := (a+b)*(d+c)-(a+b+c+d)/a;
+		WRITE (a);
+                WRITE(DBG); -- 2
+		d := 0 - d;
+		WRITE (d);
+                WRITE(DBG); -- 3
+		WRITE (a);
+                WRITE(DBG);
+		WRITE (b);
+                WRITE(DBG);
+		WRITE (c);
+                WRITE(DBG);
+		WRITE(d);
+                WRITE(DBG);
+		a := a + b;
+		WRITE (a);
+                WRITE(DBG);
+		b := a * c;
+		WRITE (b);
+                WRITE(DBG);
+		c := 0 - a + b;
+		WRITE (c);
+                WRITE(DBG);
+		d := 0 - d;
+		WRITE (d);
+                WRITE(DBG);
+		a := (a+b)*(d+c)-(a+b+c+d)/a;
+		WRITE (a);
+                WRITE(DBG);
+		d := 0 - d;
+		WRITE (d);
+                WRITE(DBG);
+		
+		a := a + 10;
+		WRITE (a);
+                WRITE(DBG);
+		b := b + a + 10;
+		WRITE (b);
+                WRITE(DBG);
+		c := 0 - 10;
+		WRITE (c);
+                WRITE(DBG);
+		x := 1.0;
+		y := 2.0;
+		z := 3.14159;
+		WRITE (x);
+                WRITE(DBG);
+		WRITE (z);
+                WRITE(DBG);
+		WRITE (y);
+                WRITE(DBG);
+		x := z/2.0;
+		y := z/y;
+		WRITE (x);
+                WRITE(DBG);
+		WRITE (y);
+                WRITE(DBG);
+		t := (x+y+z)/z;
+		WRITE (t);
+                WRITE(DBG);
+		t := t*t;
+		WRITE (t);
+                WRITE(DBG);
+		WRITE (a);
+                WRITE(DBG);
+		WRITE (b);
+                WRITE(DBG);
+		WRITE (c);
+                WRITE(DBG);
+		WRITE(d);
+                WRITE(DBG);
+		a := (a+b)*(d+c)-(a+b+c+d)/a;
+		WRITE (a);
+                WRITE(DBG);
+		WRITE (d);
+                WRITE(DBG);
+		t := (t+z+t+t/2.0+z/4.0+z/5.0+z/6.0+z/7.0)+ a+b+c+d;
+		WRITE (t);
+                WRITE(DBG);
+                t := (t/t)*(t*t)/(t*t)+((d*d)/(d*d));
+		WRITE (t);
+                WRITE(DBG);
+                WRITE(DBG);
+                t := a*b - c + (2.426+ 10.0/(1.0/(a+ (b-c)*(d+a)/(2.456+3.1519*(d*((b+c)/(d*(z+2.0))*x)+5.012*(t+z*1.0-a*((d-c)/(a+b)))))))) + (2.426+ 10.0/(1.0/(a+ (b-c)*(d+a)/(2.456+3.1519*(d*((b+c)/(d*(z+2.0))*x)+5.012*(t+z*1.0-a*((d-c)/(a+b))))))));
+		WRITE (t);
+                WRITE(DBG);
+	END	
+END
