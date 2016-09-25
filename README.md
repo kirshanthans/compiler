@@ -13,6 +13,6 @@ Testing the Compiler
 
     ./Micro test.micro > <output file>
 
-###Testing your generated code###
+###Testing generated code###
 
 For project steps 4–7, the compiler can be tested by running your generated code through the Tiny simulator, a program that simulates a machine that supports the Tiny instruction set.
